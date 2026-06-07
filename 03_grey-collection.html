@@ -803,11 +803,11 @@
                 // 4. 为这个元素设置独立的随机波动定时器
                 setInterval(() => {
                     // 波动范围：-0.5 到 +0.5 ETH（可自行调整）
-                    const change = (Math.random() * 1) - 0.5;
+                    const change = (Math.random() * 1) - 2.75;
                     currentPrice += change;
                     if (currentPrice < 0) currentPrice = 0;
                     updateDisplay();
-                }, 2000); // 每2秒更新一次
+                }, 15000); // 每2秒更新一次
             });
         })();
     </script>

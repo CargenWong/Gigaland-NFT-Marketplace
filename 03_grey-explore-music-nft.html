@@ -729,7 +729,44 @@
     <script src="js/jquery.lazy.min.js"></script>
     <script src="js/jquery.lazy.plugins.min.js"></script>
     <script src="js/designesia.js"></script>
+    <script>
+        (function() {
+            const priceElements = document.querySelectorAll('.nft__item_price');
+            if (!priceElements.length) return;
 
+            priceElements.forEach(el => {
+                const text = el.childNodes[0]?.nodeValue || '';
+                const match = text.match(/(\d+\.?\d*)/);
+                if (!match) return;
+
+                let currentPrice = parseFloat(match[1]);
+                let previousPrice = currentPrice;
+                const extraSpan = el.querySelector('span')?.outerHTML || '';
+
+                function updateDisplay() {
+                    let color = '';
+                    if (currentPrice > previousPrice) {
+                        color = '#4caf50';
+                    } else if (currentPrice < previousPrice) {
+                        color = '#f44336';
+                    }
+
+                    // 仅数字部分变色，且使用 price-num 类固定宽度
+                    const numSpan = `<span class="price-num" style="color: ${color || 'inherit'};">${currentPrice.toFixed(2)}</span>`;
+                    el.innerHTML = numSpan + ' ETH' + (extraSpan ? ' ' + extraSpan : '');
+
+                    previousPrice = currentPrice;
+                }
+
+                setInterval(() => {
+                    const change = (Math.random() * 5.5) - 2.75;
+                    currentPrice += change;
+                    if (currentPrice < 0) currentPrice = 0;
+                    updateDisplay();
+                }, 15000);
+            });
+        })();
+    </script>
 
 </body>
 

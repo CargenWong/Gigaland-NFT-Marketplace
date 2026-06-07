@@ -953,35 +953,39 @@
     <script src="js/designesia.js"></script>
     <script>
         (function() {
-            // 获取页面上所有价格元素
             const priceElements = document.querySelectorAll('.nft__item_price');
             if (!priceElements.length) return;
 
-            // 为每个价格元素创建一个独立的管理器
             priceElements.forEach(el => {
-                // 1. 提取初始价格数字（比如从 "475.19 ETH<span>1/14</span>" 中提取 475.19）
                 const text = el.childNodes[0]?.nodeValue || '';
-                const initialPriceMatch = text.match(/(\d+\.?\d*)/);
-                if (!initialPriceMatch) return;
+                const match = text.match(/(\d+\.?\d*)/);
+                if (!match) return;
 
-                let currentPrice = parseFloat(initialPriceMatch[1]);
+                let currentPrice = parseFloat(match[1]);
+                let previousPrice = currentPrice;
+                const extraSpan = el.querySelector('span')?.outerHTML || '';
 
-                // 2. 备份后面的 <span> 标签（比如 <span>1/14</span>）
-                const spanBackup = el.querySelector('span')?.outerHTML || '';
-
-                // 3. 更新这个元素显示的函数
                 function updateDisplay() {
-                    el.innerHTML = currentPrice.toFixed(2) + ' ETH' + (spanBackup ? ' ' + spanBackup : '');
+                    let color = '';
+                    if (currentPrice > previousPrice) {
+                        color = '#4caf50';
+                    } else if (currentPrice < previousPrice) {
+                        color = '#f44336';
+                    }
+
+                    // 仅数字部分变色，且使用 price-num 类固定宽度
+                    const numSpan = `<span class="price-num" style="color: ${color || 'inherit'};">${currentPrice.toFixed(2)}</span>`;
+                    el.innerHTML = numSpan + ' ETH' + (extraSpan ? ' ' + extraSpan : '');
+
+                    previousPrice = currentPrice;
                 }
 
-                // 4. 为这个元素设置独立的随机波动定时器
                 setInterval(() => {
-                    // 波动范围：-0.5 到 +0.5 ETH（可自行调整）
-                    const change = (Math.random() * 1) - 0.5;
+                    const change = (Math.random() * 5.5) - 2.75;
                     currentPrice += change;
                     if (currentPrice < 0) currentPrice = 0;
                     updateDisplay();
-                }, 1600); // 每2秒更新一次
+                }, 15000);
             });
         })();
     </script>
